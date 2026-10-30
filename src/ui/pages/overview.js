@@ -32,7 +32,15 @@ function chart(rows) {
   return svg;
 }
 
+/** Trang tổng quan: trả `{el, update}` như các trang khác; `update` dựng lại khi dữ liệu thay đổi. */
 export function overviewPage(ctx) {
+  const el = h('div');
+  const update = () => el.replaceChildren(render(ctx));
+  update();
+  return { el, update };
+}
+
+function render(ctx) {
   const { state } = ctx;
   const y = summarizeYear(state.months);
   const empty = state.months.every((m) => m.rev === -1);

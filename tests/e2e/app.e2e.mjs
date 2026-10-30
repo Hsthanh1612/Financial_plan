@@ -84,6 +84,9 @@ try {
 
   await step('reload → dữ liệu vẫn đúng (đọc lại từ Firestore)', async () => {
     await page.reload();
+    // URL giữ tab đang xem (#budget) → sau reload app mở lại đúng tab đó.
+    await page.getByRole('heading', { name: 'Thu chi theo tháng' }).waitFor();
+    await page.getByRole('button', { name: 'Tổng quan' }).click();
     await page.getByRole('heading', { name: 'Theo dõi tài chính năm 2023' }).waitFor();
     const card = page.locator('.card').filter({ hasText: 'Tổng thu nhập 2023' });
     assert.equal((await card.locator('.value').textContent()).trim(), '20');
@@ -98,6 +101,8 @@ try {
     await page.getByLabel('Email').fill(email2);
     await page.getByLabel('Mật khẩu').fill('secret123');
     await page.getByRole('button', { name: 'Tạo tài khoản' }).click();
+    await page.getByText(email2).waitFor(); // header đã đổi sang tài khoản mới
+    await page.getByRole('button', { name: 'Tổng quan' }).click();
     await page.getByRole('heading', { name: 'Theo dõi tài chính năm 2023' }).waitFor();
     const card = page.locator('.card').filter({ hasText: 'Tổng thu nhập 2023' });
     assert.equal((await card.locator('.value').textContent()).trim(), '0');
