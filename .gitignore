@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+*-key.json
+serviceAccount*.json
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+*.log
+.firebase/
+
+# Skills bên thứ ba: khôi phục từ skills-lock.json
+.claude/skills/

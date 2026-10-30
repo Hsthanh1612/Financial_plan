@@ -1,0 +1,70 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function isNum(v) {
+      return v is int || v is float;
+    }
+
+    function validPlan(d) {
+      return d.keys().hasOnly(['startYear', 'age', 'savingRate', 'goals', 'rev', 'updatedAt'])
+        && d.keys().hasAll(['startYear', 'age', 'savingRate', 'goals', 'rev', 'updatedAt'])
+        && d.startYear is int && d.startYear >= 2000 && d.startYear <= 2100
+        && d.age is int && d.age >= 0 && d.age <= 120
+        && isNum(d.savingRate) && d.savingRate > 0 && d.savingRate <= 1
+        && d.goals is list && d.goals.size() <= 20
+        && d.rev is int && d.rev >= 0
+        && d.updatedAt == request.time;
+    }
+
+    function validMonth(d, id) {
+      return d.keys().hasOnly(['year', 'month', 'planIncome', 'planExpense', 'income', 'expense', 'reasons', 'rev', 'updatedAt'])
+        && d.keys().hasAll(['year', 'month', 'planIncome', 'planExpense', 'income', 'expense', 'rev', 'updatedAt'])
+        && d.year is int && d.year >= 2000 && d.year <= 2100
+        && d.month is int && d.month >= 1 && d.month <= 12
+        && id == string(d.year) + '-' + (d.month < 10 ? '0' : '') + string(d.month)
+        && d.planIncome is map && d.planIncome.size() <= 30
+        && d.planExpense is map && d.planExpense.size() <= 30
+        && (!('reasons' in d) || (d.reasons is map && d.reasons.size() <= 60))
+        && d.income is list && d.income.size() <= 200
+        && d.expense is list && d.expense.size() <= 200
+        && d.rev is int && d.rev >= 0
+        && d.updatedAt == request.time;
+    }
+
+    match /users/{uid}/plan/{docId} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid) && docId == 'main'
+        && validPlan(request.resource.data) && request.resource.data.rev == 0;
+      allow update: if isOwner(uid) && docId == 'main'
+        && validPlan(request.resource.data)
+        && request.resource.data.rev == resource.data.rev + 1;
+      allow delete: if false;
+    }
+
+    match /users/{uid}/months/{monthId} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid)
+        && validMonth(request.resource.data, monthId) && request.resource.data.rev == 0;
+      allow update: if isOwner(uid)
+        && validMonth(request.resource.data, monthId)
+        && request.resource.data.rev == resource.data.rev + 1
+        && request.resource.data.year == resource.data.year
+        && request.resource.data.month == resource.data.month;
+      allow delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

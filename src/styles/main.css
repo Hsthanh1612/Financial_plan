@@ -1,0 +1,63 @@
+:root {
+  --ux-bg: #f6f7f9;
+  --ux-surface: #ffffff;
+  --ux-text: #1b2430;
+  --ux-muted: #5b6676;
+  --ux-border: #d9dee6;
+  --ux-accent: #1f5fbf;
+  --ux-accent-text: #ffffff;
+  --ux-good: #14724a;
+  --ux-bad: #b42318;
+  --ux-input: #0b57d0; /* mockup: chữ xanh dương = ô nhập liệu */
+  --ux-radius: 10px;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ux-bg: #0f141b; --ux-surface: #171e28; --ux-text: #e6ebf2; --ux-muted: #9aa6b6;
+    --ux-border: #2b3544; --ux-accent: #6aa3ff; --ux-accent-text: #0b1220;
+    --ux-good: #4cc38a; --ux-bad: #ff8a80; --ux-input: #8ab4ff;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--ux-bg); color: var(--ux-text); line-height: 1.5; -webkit-tap-highlight-color: transparent; }
+h1, h2, h3 { text-wrap: balance; }
+.skip { position: absolute; left: -999px; }
+.skip:focus { left: 8px; top: 8px; background: var(--ux-surface); padding: 8px; z-index: 10; }
+header.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;
+  padding: 12px 16px; background: var(--ux-surface); border-bottom: 1px solid var(--ux-border); }
+header.top h1 { font-size: 1.1rem; margin: 0; }
+nav[aria-label] { display: flex; gap: 4px; flex-wrap: wrap; }
+nav button, .btn { font: inherit; padding: 8px 14px; border-radius: var(--ux-radius); border: 1px solid var(--ux-border);
+  background: var(--ux-surface); color: var(--ux-text); cursor: pointer; touch-action: manipulation; }
+nav button[aria-current='page'], .btn.primary { background: var(--ux-accent); color: var(--ux-accent-text); border-color: var(--ux-accent); }
+button:hover:not(:disabled) { filter: brightness(0.96); }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+:focus-visible { outline: 3px solid var(--ux-accent); outline-offset: 2px; }
+main { max-width: 1100px; margin: 0 auto; padding: 16px; }
+h2 { margin: 8px 0 12px; font-size: 1.25rem; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.card { background: var(--ux-surface); border: 1px solid var(--ux-border); border-radius: var(--ux-radius); padding: 14px; }
+.card .label { color: var(--ux-muted); font-size: 0.85rem; }
+.card .value { font-size: 1.5rem; font-weight: 650; font-variant-numeric: tabular-nums; }
+.table-wrap { overflow-x: auto; background: var(--ux-surface); border: 1px solid var(--ux-border); border-radius: var(--ux-radius); margin-bottom: 16px; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--ux-border); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+caption { text-align: left; font-weight: 600; padding: 10px; }
+input, select { font: inherit; color: var(--ux-input); background: var(--ux-bg); border: 1px solid var(--ux-border);
+  border-radius: 6px; padding: 6px 8px; min-width: 0; }
+td input { width: 6.5rem; text-align: right; }
+label { display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; color: var(--ux-muted); }
+form.row, .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin-bottom: 16px; }
+.pos { color: var(--ux-good); } .neg { color: var(--ux-bad); }
+.error { color: var(--ux-bad); margin: 8px 0; }
+.status { font-size: 0.85rem; color: var(--ux-muted); }
+.status[data-state='error'], .status[data-state='conflict'] { color: var(--ux-bad); font-weight: 600; }
+.auth { max-width: 380px; margin: 10vh auto; padding: 16px; }
+.auth form { display: flex; flex-direction: column; gap: 12px; }
+.empty { color: var(--ux-muted); padding: 24px; text-align: center; }
+svg.chart { width: 100%; height: auto; background: var(--ux-surface); border: 1px solid var(--ux-border); border-radius: var(--ux-radius); }
+@media (prefers-reduced-motion: no-preference) { button { transition: filter 0.15s; } }
+@media (max-width: 600px) { main { padding: 12px; } td input { width: 5rem; } }
