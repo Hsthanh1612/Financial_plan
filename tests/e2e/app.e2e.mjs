@@ -113,8 +113,20 @@ try {
 
   await step('responsive 375px: không tràn ngang trang', async () => {
     await page.setViewportSize({ width: 375, height: 800 });
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
-    assert.ok(overflow <= 1, `trang tràn ngang ${overflow}px`);
+    for (const tab of ['Tổng quan', 'Mục tiêu', 'Thu chi', 'Cài đặt']) {
+      await page.getByRole('button', { name: tab, exact: true }).click();
+      await page.waitForTimeout(150);
+      const r = await page.evaluate(() => {
+        const over = document.documentElement.scrollWidth - window.innerWidth;
+        // Phần tử vượt mép phải nằm ngoài vùng cuộn riêng (.table-wrap) → là thủ phạm gây tràn trang.
+        const culprits = [...document.querySelectorAll('body *')]
+          .filter((e) => !e.closest('.table-wrap') && e.getBoundingClientRect().right > window.innerWidth + 1)
+          .slice(0, 3)
+          .map((e) => `${e.tagName.toLowerCase()}${e.className ? '.' + e.className : ''}[${Math.round(e.getBoundingClientRect().right)}]`);
+        return { over, culprits };
+      });
+      assert.ok(r.over <= 1, `trang "${tab}" tràn ngang ${r.over}px; phần tử: ${r.culprits.join(', ')}`);
+    }
   });
 
   await step('không có lỗi console / request thất bại', async () => {
