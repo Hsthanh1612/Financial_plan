@@ -20,8 +20,8 @@ Tiền trả/tháng của 8 mục tiêu và "thu nhập cần có" các năm 202
 4. Lỗ hổng gRPC (GHSA-m9gg-hp2v-232j, GHSA-f596-whhp-79r4) qua dependency của Firebase SDK — ép `@grpc/grpc-js` ≥ 1.14.7, chạy lại toàn bộ test.
 
 ## Chưa kiểm thử / hạn chế
-- **Đăng nhập thật trên production**: Authentication chưa được khởi tạo trong project (probe Identity Toolkit trả `CONFIGURATION_NOT_FOUND`), nên luồng đăng ký/đăng nhập, đọc/ghi dữ liệu thật qua trang GitHub Pages **chưa chạy được và chưa kiểm thử**.
-- Rules production đã deploy nhưng chưa được kiểm tra bằng người dùng thật (chỉ kiểm thử qua Emulator).
+- Smoke test production (`node tests/e2e/production-smoke.mjs`, Edge, 2026-10-31): 6/6 đạt — đăng ký, mục tiêu đúng, tự lưu được xác nhận, reload đúng, không lỗi console. Chỉ chạy thủ công 1 lần; để lại tài khoản thử `smoke1793458169530@example.test` trên production (chưa dọn được, xem FINAL-REPORT mục 7).
+- Rules production: nhánh được phép (chủ sở hữu tạo/đọc/cập nhật plan) đã chạy thật qua smoke test; nhánh bị từ chối (người khác, chưa đăng nhập, sai cấu trúc) chỉ kiểm thử qua Emulator, chưa thử trên production.
 - Missing-index: không có composite index; truy vấn tháng chỉ dùng documentId nên chưa cần.
 - Hiệu năng/bundle: JS 593 kB (gzip ~179 kB), chưa tối ưu tách chunk. Chưa đo trên thiết bị yếu.
 - Test Rules: nhiều ca bị từ chối do lỗi đánh giá chứ không phải `false` tường minh.

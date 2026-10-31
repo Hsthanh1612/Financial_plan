@@ -5,12 +5,12 @@ Ngày: 2026-10-31. Trạng thái: **Đã xác minh** (có bằng chứng) · **C
 ## 1. Tổng quan
 Ứng dụng web kế hoạch tài chính cá nhân dựng từ `Mockup.xlsx`: mục tiêu tài chính, tiền cần tiết kiệm/tháng (PMT/PV), lộ trình thu nhập cần có, thu chi 12 tháng, tự đồng bộ Cloud Firestore. Repo: https://github.com/Hsthanh1612/Finance-plan.
 
-**Kết luận: CHƯA hoàn thành đầy đủ.** Code, test, CI/CD, Rules và triển khai Pages đã đạt, nhưng (a) Authentication chưa được khởi tạo nên người dùng thật chưa dùng được bản production, và (b) một phần nghiệp vụ trong mockup chưa được cài đặt (mục 2 và 15).
+**Kết luận: CHƯA hoàn thành đầy đủ.** Code, test, CI/CD, Rules, Authentication và triển khai Pages đã đạt và dùng được trên production; còn thiếu một phần nghiệp vụ của mockup (mục 2 và 15) và còn dữ liệu thử cần dọn (mục 7).
 
 ## 2. Chức năng
 | Chức năng | Trạng thái |
 |---|---|
-| Đăng nhập/đăng ký Email-Mật khẩu (code) | Đã xác minh trên Emulator; **Bị chặn trên production** (mục 7) |
+| Đăng nhập/đăng ký Email-Mật khẩu | Đã xác minh trên Emulator và trên production (smoke test) |
 | Cài đặt kế hoạch; mục tiêu nợ/đầu tư/quỹ; lộ trình theo năm/tuổi | Đã xác minh (khớp Excel) |
 | Thu chi theo tháng, kế hoạch/thực tế/chênh lệch, Tổng quan 12 tháng, biểu đồ | Đã xác minh (e2e) |
 | Tự đồng bộ có debounce/transaction/xung đột | Đã xác minh (unit + integration + e2e) |
@@ -35,10 +35,11 @@ Ngày: 2026-10-31. Trạng thái: **Đã xác minh** (có bằng chứng) · **C
 ## 7. Authentication, Rules, indexes
 - Rules đã release lên production (`firebase deploy --only firestore`) — Đã xác minh; kiểm thử Emulator 17/17.
 - Indexes: rỗng có chủ đích (không cần) — đã deploy.
-- **Authentication: Bị chặn.** Probe `accounts:signInWithPassword` với API key của project trả `CONFIGURATION_NOT_FOUND`, nghĩa là Authentication chưa được khởi tạo. Cần người dùng: Firebase Console → Authentication → Get started → Sign-in method → bật Email/Password. Không tự làm qua API vì nguy cơ kích hoạt Identity Platform (có thể dính Billing).
+- **Authentication: Đã xác minh** (2026-10-31): Email/Password đã bật (probe trả `INVALID_LOGIN_CREDENTIALS`). Smoke test trên production thật (`tests/e2e/production-smoke.mjs`): đăng ký → plan khởi tạo → mục tiêu tính đúng → tự lưu được server xác nhận → reload đọc lại đúng → không lỗi console: **6/6 đạt**.
+- **Dữ liệu thử còn lại trên production**: tài khoản `smoke1793458169530@example.test` (Authentication) và tài liệu `users/<uid>/plan/main` của tài khoản đó. Lệnh dọn dẹp bị bộ phân loại quyền chặn nên chưa xóa; cần xóa thủ công trong Console (Authentication → Users; Firestore → users) hoặc cho phép mình xóa.
 
 ## 8. Khởi tạo plan
-Cơ chế: `bootstrapPlan` tạo plan mặc định từ mockup ở lần đăng nhập đầu, chạy lại không ghi đè — Đã xác minh trên Emulator (integration + e2e). Trên production: **Chưa xác minh** (chờ Authentication).
+Cơ chế: `bootstrapPlan` tạo plan mặc định từ mockup ở lần đăng nhập đầu, chạy lại không ghi đè — Đã xác minh trên Emulator (integration + e2e). Trên production: Đã xác minh bằng smoke test (đăng ký → plan mặc định hiện đúng và lưu/reload được).
 
 ## 9. Tự đồng bộ
 Debounce, ghi tuần tự, `rev`+transaction, retry mạng có giới hạn, không retry lỗi quyền, dừng khi xung đột — Đã xác minh (6 unit test, 6 integration, e2e reload).
@@ -55,20 +56,20 @@ Xem `docs/TEST-REPORT.md`: unit 19/19, Rules+repository 17/17, e2e 9/9 (Edge loc
 - Quét secret trong working tree và `git grep` — chỉ có Firebase Web API key (công khai theo thiết kế). Lịch sử Git chỉ có 4 commit của dự án này.
 
 ## 13. Triển khai
-https://hsthanh1612.github.io/Finance-plan/ — Đã xác minh sau khi đổi tên repo (commit `ba01659`, CI + Deploy success): HTTP 200, JS/CSS tải đúng, bundle trỏ project production, asset tải đúng, bundle trỏ project production, không chứa emulator/localhost. Chưa kiểm tra luồng người dùng thật trên URL này (do mục 7).
+https://hsthanh1612.github.io/Finance-plan/ — Đã xác minh sau khi đổi tên repo (commit `ba01659`, CI + Deploy success): HTTP 200, JS/CSS tải đúng, bundle trỏ project production, asset tải đúng, bundle trỏ project production, không chứa emulator/localhost. Luồng đăng ký/lưu/reload đã chạy thật trên URL này (mục 7).
 
 ## 14. Billing/Spark
 Không liên kết Billing, không nâng Blaze, không Hosting/Functions — **Đã xác minh** trong thao tác của mình (chỉ dùng `projects:create`, `apps:create`, `deploy --only firestore`). Trạng thái Billing của project **Chưa xác minh bằng công cụ** (CLI không có lệnh đọc billing); gói Spark là thông tin do người dùng cung cấp.
 
 ## 15. Lỗi còn tồn tại / chưa kiểm tra
-- Authentication chưa khởi tạo (mục 7).
+- Dữ liệu thử trên production chưa dọn (mục 7).
 - Nghiệp vụ chưa làm: F9, F10, F11 và một số mục trong `docs/MOCKUP-REVIEW.md`.
 - Phần tử bên trong list (goals/income/expense) không được Rules kiểm kiểu (giới hạn bằng số phần tử).
-- Chưa chạy trọn quy trình skill `security-audit`; chưa test e2e xung đột/mất mạng trên trình duyệt.
+- Chưa chạy trọn quy trình skill `security-audit`; chưa test e2e xung đột/mất mạng trên trình duyệt; smoke test production chỉ chạy một lần, thủ công, không nằm trong CI.
 - Bundle 593 kB chưa tách chunk.
 
 ## 16. Việc cần quyền/hành động của người dùng
-1. Bật Authentication + Email/Password trong Firebase Console (xem mục 7).
+1. Xóa tài khoản/dữ liệu thử (mục 7) hoặc cho phép mình xóa.
 2. Tùy chọn: chuyển repo sang private (Pages cần public trên gói GitHub Free — hiện repo là public và chứa `Mockup.xlsx` + `MASTER-PROMPT.txt`; xem xét có nên giữ công khai không).
 3. Xác nhận Billing của project là chưa liên kết (Firebase Console → Usage and billing).
 
