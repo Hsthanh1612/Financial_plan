@@ -55,7 +55,7 @@ Xem `docs/TEST-REPORT.md`: unit 19/19, Rules+repository 17/17, e2e 9/9 (Edge loc
 - Quét secret trong working tree và `git grep` — chỉ có Firebase Web API key (công khai theo thiết kế). Lịch sử Git chỉ có 4 commit của dự án này.
 
 ## 13. Triển khai
-https://hsthanh1612.github.io/Finance-plan/ — HTTP 200 đã xác minh trước khi đổi tên repo; **cần kiểm tra lại** sau lần deploy dưới tên mới, asset tải đúng, bundle trỏ project production, không chứa emulator/localhost. Chưa kiểm tra luồng người dùng thật trên URL này (do mục 7).
+https://hsthanh1612.github.io/Finance-plan/ — Đã xác minh sau khi đổi tên repo (commit `ba01659`, CI + Deploy success): HTTP 200, JS/CSS tải đúng, bundle trỏ project production, asset tải đúng, bundle trỏ project production, không chứa emulator/localhost. Chưa kiểm tra luồng người dùng thật trên URL này (do mục 7).
 
 ## 14. Billing/Spark
 Không liên kết Billing, không nâng Blaze, không Hosting/Functions — **Đã xác minh** trong thao tác của mình (chỉ dùng `projects:create`, `apps:create`, `deploy --only firestore`). Trạng thái Billing của project **Chưa xác minh bằng công cụ** (CLI không có lệnh đọc billing); gói Spark là thông tin do người dùng cung cấp.
