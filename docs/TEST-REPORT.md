@@ -1,12 +1,12 @@
-# Báo cáo kiểm thử
+﻿# Báo cáo kiểm thử
 
 Ngày: 2026-10-31. Kết quả lấy từ lần chạy thật; CI = GitHub Actions run trên commit `f35cb7e` (kết luận `success`).
 
 | Lệnh | Phạm vi | Kết quả | Nơi chạy |
 |---|---|---|---|
-| `npm run test:unit` | 19 test: công thức PMT/PV, mục tiêu, lộ trình, thu chi, autosave | 19/19 đạt | Local + CI |
-| `npm run test:rules` | 17 test: Security Rules (11) + repository ↔ Firestore Emulator (6) | 17/17 đạt | Local + CI |
-| `npm run test:e2e` | 9 bước trên trình duyệt thật + Emulator Auth/Firestore | 9/9 đạt | Local (Edge) + CI (Chrome) |
+| `npm run test:unit` | 32 test: công thức PMT/PV, mục tiêu, lộ trình, thu chi, autosave, mô phỏng, khảo sát | 32/32 đạt | Local + CI |
+| `npm run test:rules` | 19 test: Security Rules + repository ↔ Firestore Emulator | 19/19 đạt | Local + CI |
+| `npm run test:e2e` | 13 bước trên trình duyệt thật + Emulator Auth/Firestore (gồm khảo sát, mô phỏng, lộ trình, chi phát triển) | 13/13 đạt | Local (Edge) + CI (Chrome) |
 | `npm run build` | Build production | Đạt | Local + CI |
 | `npm audit` | Dependency | 0 lỗ hổng | Local + CI (`--omit=dev --audit-level=high`) |
 
@@ -27,3 +27,4 @@ Tiền trả/tháng của 8 mục tiêu và "thu nhập cần có" các năm 202
 - Test Rules: nhiều ca bị từ chối do lỗi đánh giá chứ không phải `false` tường minh.
 - Chưa có test trình duyệt cho: xung đột `rev` giữa hai phiên, mất mạng giữa chừng (chỉ có unit test cho autosave và test repository).
 - Môi trường dev RAM thấp (~600 MB trống) khiến vài lần chạy local lỗi OOM; đã chạy lại bằng cấu hình bộ nhớ thấp (ghi trong README).
+

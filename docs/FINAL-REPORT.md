@@ -1,4 +1,4 @@
-# Báo cáo nghiệm thu
+﻿# Báo cáo nghiệm thu
 
 Ngày: 2026-10-31. Trạng thái: **Đã xác minh** (có bằng chứng) · **Chưa xác minh** · **Bị chặn** · **Không áp dụng**.
 
@@ -45,7 +45,7 @@ Cơ chế: `bootstrapPlan` tạo plan mặc định từ mockup ở lần đăng
 Debounce, ghi tuần tự, `rev`+transaction, retry mạng có giới hạn, không retry lỗi quyền, dừng khi xung đột — Đã xác minh (6 unit test, 6 integration, e2e reload).
 
 ## 10–11. Kết quả kiểm thử
-Xem `docs/TEST-REPORT.md`: unit 19/19, Rules+repository 17/17, e2e 9/9 (Edge local, Chrome CI), build đạt, `npm audit` 0.
+Xem `docs/TEST-REPORT.md`: unit 32/32, Rules+repository 19/19, e2e 13/13 (CI commit f9dea37 xanh) (Edge local, Chrome CI), build đạt, `npm audit` 0.
 
 ## 12. GitHub và CI/CD
 - Repo `Hsthanh1612/Finance-plan` (public; đổi tên từ `Financial_plan` theo yêu cầu, remote đã cập nhật). Push `main` fast-forward, không force.
@@ -75,3 +75,4 @@ Không liên kết Billing, không nâng Blaze, không Hosting/Functions — **�
 
 ## 17. Giới hạn vận hành
 Spark: 50.000 đọc/ngày, 20.000 ghi/ngày, 1 GiB (xác minh lại tại trang giá khi vận hành). Không có listener realtime; hai thiết bị cùng sửa sẽ nhận cảnh báo xung đột và phải tải lại.
+
