@@ -13,3 +13,7 @@ ui-debug.log
 
 # Skills bên thứ ba: khôi phục từ skills-lock.json
 .claude/skills/
+
+# Tai lieu nguon rieng tu (giu o may, khong dua len repo cong khai)
+Mockup.xlsx
+MASTER-PROMPT.txt
