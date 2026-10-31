@@ -1,4 +1,4 @@
-# Rà soát bảo mật
+﻿# Rà soát bảo mật
 
 ## Mô hình tin cậy
 - Client (trình duyệt) **không** đáng tin. Firebase Web config là định danh công khai.
@@ -18,7 +18,8 @@ Hạn chế: nhiều ca bị từ chối do lỗi đánh giá (trường thiếu
 
 ## Kiểm toán bằng skill
 - `firebase-security-rules-auditor`: điểm **4/5** (minor). Phát hiện: map không giới hạn, `reasons` không kiểm kiểu → **đã sửa** + test hồi quy. Phần tử list không kiểm kiểu → chấp nhận (lý do ở trên).
-- `security-audit` (Cloudflare): **chưa chạy toàn bộ quy trình** (chế độ full audit cần nhiều agent và tệp báo cáo riêng, chưa được yêu cầu rõ). Đã chạy ở **chế độ tập trung** (đọc mã, không thực thi) trên: `src/` (tìm sink DOM: không có `innerHTML/eval/document.write`), `firestore.rules` (owner-only, `hasOnly`, rev, deny mặc định, không delete), `.github/` (mọi action ghim SHA, `permissions` tối thiểu, không `pull_request_target`; `${{ }}` chỉ dùng cho tên repo/ref không do kẻ tấn công điều khiển). Kết quả: **không có phát hiện đã xác nhận** vượt ranh giới tin cậy. Ghi nhận không phải lỗ hổng: phần tử trong list không kiểm kiểu — chỉ tác động tới dữ liệu của chính chủ.
+- `security-audit` (Cloudflare): **chưa chạy toàn bộ quy trình** (chế độ full audit cần nhiều agent và tệp báo cáo riêng, chưa được yêu cầu rõ). Đã chạy ở **chế độ tập trung** (đọc mã, không thực thi) trên: `src/` (tìm sink DOM: không có `innerHTML/eval/document.write`), `firestore.rules` (owner-only, `hasOnly`, rev, deny mặc định, không delete), `.github/` (mọi action ghim SHA, `permissions` tối thiểu, không `pull_request_target`; `${{ }}` chỉ dùng cho tên repo/ref không do kẻ tấn công điều khiển). Kết quả: **không có phát hiện đã xác nhận** vượt ranh giới tin cậy.
+- **Full audit (skill security-audit, profile standard, chỉ đọc mã, 18 lần gọi agent, 11 đơn vị phủ):** 0 phát hiện xác nhận; 1 hướng cần kiểm chứng (Rules không giới hạn nội dung phần tử + đăng ký mở → rủi ro hạn mức Spark, phụ thuộc App Check/quota ngoài mã); 1 ứng viên bị bác (lịch sử git: không có credential). Trạng thái incomplete: hai bộ kiểm tra của skill không chạy được trên Windows (thiếu O_NOFOLLOW) và không có sandbox nên không thực thi mã đích. Báo cáo đầy đủ nằm ngoài repo (thư mục chạy của kiểm toán); lưu ý Mockup.xlsx và MASTER-PROMPT.txt đã gỡ khỏi cây ở commit 475561f nhưng vẫn còn trong lịch sử git công khai. Ghi nhận không phải lỗ hổng: phần tử trong list không kiểm kiểu — chỉ tác động tới dữ liệu của chính chủ.
 
 ## Rà soát thủ công
 - XSS: UI dựng DOM bằng `textContent`/`setAttribute`, không `innerHTML` (`src/ui/dom.js`).
@@ -36,3 +37,4 @@ Hạn chế: nhiều ca bị từ chối do lỗi đánh giá (trường thiếu
 - Email/Password provider phải được bật thủ công trong Console (chưa xác minh trên production).
 - Không có App Check (tùy chọn; chưa cấu hình).
 - Trạng thái Billing của project **chưa xác minh bằng công cụ** (CLI không cung cấp lệnh đọc billing); người dùng xác nhận là Spark.
+
