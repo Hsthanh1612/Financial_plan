@@ -18,7 +18,7 @@ Hạn chế: nhiều ca bị từ chối do lỗi đánh giá (trường thiếu
 
 ## Kiểm toán bằng skill
 - `firebase-security-rules-auditor`: điểm **4/5** (minor). Phát hiện: map không giới hạn, `reasons` không kiểm kiểu → **đã sửa** + test hồi quy. Phần tử list không kiểm kiểu → chấp nhận (lý do ở trên).
-- `security-audit` (Cloudflare): **chưa chạy toàn bộ quy trình** của skill; thay vào đó đã rà soát thủ công các mục dưới đây.
+- `security-audit` (Cloudflare): **chưa chạy toàn bộ quy trình** (chế độ full audit cần nhiều agent và tệp báo cáo riêng, chưa được yêu cầu rõ). Đã chạy ở **chế độ tập trung** (đọc mã, không thực thi) trên: `src/` (tìm sink DOM: không có `innerHTML/eval/document.write`), `firestore.rules` (owner-only, `hasOnly`, rev, deny mặc định, không delete), `.github/` (mọi action ghim SHA, `permissions` tối thiểu, không `pull_request_target`; `${{ }}` chỉ dùng cho tên repo/ref không do kẻ tấn công điều khiển). Kết quả: **không có phát hiện đã xác nhận** vượt ranh giới tin cậy. Ghi nhận không phải lỗ hổng: phần tử trong list không kiểm kiểu — chỉ tác động tới dữ liệu của chính chủ.
 
 ## Rà soát thủ công
 - XSS: UI dựng DOM bằng `textContent`/`setAttribute`, không `innerHTML` (`src/ui/dom.js`).
