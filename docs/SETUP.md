@@ -8,10 +8,10 @@ Node 24, npm 11, Git, GitHub CLI, firebase-tools 15.34.2, Java 21 (Microsoft Ope
 2. Project `financial-plan-project-2a92e` ("Financial-plan project"), gói Spark.
 3. `firebase use financial-plan-project-2a92e --alias default` → `.firebaserc`.
 4. Web App: `firebase apps:create WEB "Financial plan web"` → appId `1:324357247643:web:e2d027f3eca3e5c416ac3e`; config đặt trong `src/services/firebase/app.js`.
-5. Firestore `(default)` Standard được tạo khi chạy `firebase deploy --only firestore` (Rules + indexes đã release). Vùng thực tế là `nam5` (mặc định của deploy, không phải Singapore như dự định); không đổi được sau khi tạo.
+5. Firestore `(default)` Standard, vùng `asia-southeast1`: `firebase firestore:databases:create "(default)" --location asia-southeast1 --edition standard`, rồi `firebase deploy --only firestore` (Rules + indexes). Vùng không đổi được sau khi tạo; nếu `deploy` tự tạo database thì vùng mặc định là `nam5`, vì vậy hãy tạo database trước.
 6. **Việc người dùng cần làm**: Console → Authentication → Get started → Sign-in method → bật **Email/Password**.
 
-Xác minh: `firebase firestore:databases:get "(default)"` → STANDARD, FIRESTORE_NATIVE, nam5.
+Xác minh: `firebase firestore:databases:get "(default)"` → STANDARD, FIRESTORE_NATIVE, asia-southeast1.
 
 ## GitHub
 1. `gh auth login` (scope `repo`, `workflow`).

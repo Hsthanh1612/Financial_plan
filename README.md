@@ -1,4 +1,4 @@
-# Financial_plan — Kế hoạch tài chính cá nhân
+# Finance-plan — Kế hoạch tài chính cá nhân
 
 Ứng dụng web dựng từ `Mockup.xlsx`: lập mục tiêu tài chính, tính số tiền cần tiết kiệm mỗi tháng (công thức PMT/PV giống Excel), lộ trình thu nhập cần có theo năm/tuổi, và theo dõi thu chi 12 tháng. Dữ liệu lưu trên Cloud Firestore, tự động đồng bộ.
 

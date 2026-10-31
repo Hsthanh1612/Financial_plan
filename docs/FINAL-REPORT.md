@@ -3,7 +3,7 @@
 Ngày: 2026-10-31. Trạng thái: **Đã xác minh** (có bằng chứng) · **Chưa xác minh** · **Bị chặn** · **Không áp dụng**.
 
 ## 1. Tổng quan
-Ứng dụng web kế hoạch tài chính cá nhân dựng từ `Mockup.xlsx`: mục tiêu tài chính, tiền cần tiết kiệm/tháng (PMT/PV), lộ trình thu nhập cần có, thu chi 12 tháng, tự đồng bộ Cloud Firestore. Repo: https://github.com/Hsthanh1612/Financial_plan.
+Ứng dụng web kế hoạch tài chính cá nhân dựng từ `Mockup.xlsx`: mục tiêu tài chính, tiền cần tiết kiệm/tháng (PMT/PV), lộ trình thu nhập cần có, thu chi 12 tháng, tự đồng bộ Cloud Firestore. Repo: https://github.com/Hsthanh1612/Finance-plan.
 
 **Kết luận: CHƯA hoàn thành đầy đủ.** Code, test, CI/CD, Rules và triển khai Pages đã đạt, nhưng (a) Authentication chưa được khởi tạo nên người dùng thật chưa dùng được bản production, và (b) một phần nghiệp vụ trong mockup chưa được cài đặt (mục 2 và 15).
 
@@ -28,8 +28,8 @@ Ngày: 2026-10-31. Trạng thái: **Đã xác minh** (có bằng chứng) · **C
 Đã cài 74 skill (Matt Pocock 38, Superpowers 15, Vercel 9, Firebase 10, Cloudflare 1, Lucian 1) — **Đã xác minh** (có trong `skills-lock.json`, agent nhận diện). Đã **dùng thật**: `firebase-security-rules-auditor`, `web-design-guidelines`. Chưa dùng: `security-audit` (Cloudflare), `lucian-uxui` và các skill còn lại. Bỏ qua 3 skill Firebase Hosting/App Hosting/Xcode. Xem `docs/SKILLS-INVENTORY.md`.
 
 ## 6. Firebase
-- Project ID `financial-plan-project-2a92e`; Firestore `(default)` Standard `FIRESTORE_NATIVE` — **Đã xác minh** bằng `firestore:databases:get`: location **`nam5`** (multi-region Mỹ), PITR và backup tắt, xóa không bị bảo vệ.
-- Lưu ý: mình định tạo ở `asia-southeast1` (Singapore) nhưng lệnh tạo bị từ chối vì API chưa bật; database thực tế do `firebase deploy --only firestore` tự tạo với vùng mặc định `nam5`. Vùng database **không đổi được** sau khi tạo; nếu cần Singapore phải tạo project/database mới. Độ trễ từ Việt Nam cao hơn nhưng chấp nhận được với ứng dụng này; hạn mức Spark không đổi.
+- Project ID `financial-plan-project-2a92e`; Firestore `(default)` Standard `FIRESTORE_NATIVE`, location **`asia-southeast1`** (Singapore), PITR tắt — **Đã xác minh** bằng `firestore:databases:get` (2026-10-31).
+- Lịch sử: database đầu tiên do `deploy` tự tạo ở `nam5`; vì vùng không đổi được, đã xóa (database rỗng — Authentication chưa bật nên chưa ai ghi được dữ liệu) và tạo lại ở Singapore; Rules + indexes đã deploy lại.
 - Web App `1:324357247643:web:e2d027f3eca3e5c416ac3e` — Đã xác minh.
 
 ## 7. Authentication, Rules, indexes
@@ -47,7 +47,7 @@ Debounce, ghi tuần tự, `rev`+transaction, retry mạng có giới hạn, kh�
 Xem `docs/TEST-REPORT.md`: unit 19/19, Rules+repository 17/17, e2e 9/9 (Edge local, Chrome CI), build đạt, `npm audit` 0.
 
 ## 12. GitHub và CI/CD
-- Repo `Hsthanh1612/Financial_plan` (public — đã tồn tại trước, chỉ có README). Mình push `main` fast-forward, không force.
+- Repo `Hsthanh1612/Finance-plan` (public; đổi tên từ `Financial_plan` theo yêu cầu, remote đã cập nhật). Push `main` fast-forward, không force.
 - CI và Deploy: **success** trên `f35cb7e` (lần đầu thất bại do 2 lỗi thật, đã sửa — xem TEST-REPORT).
 - Workflow: `permissions: contents: read`; chỉ job deploy có `pages: write`/`id-token: write`; actions pin full SHA; không secret; không `pull_request_target`.
 - Ruleset `protect-main`: chặn xóa và force push, yêu cầu check `test-build`; admin repo được bypass (để chủ repo push trực tiếp) — Đã xác minh tạo thành công.
@@ -55,7 +55,7 @@ Xem `docs/TEST-REPORT.md`: unit 19/19, Rules+repository 17/17, e2e 9/9 (Edge loc
 - Quét secret trong working tree và `git grep` — chỉ có Firebase Web API key (công khai theo thiết kế). Lịch sử Git chỉ có 4 commit của dự án này.
 
 ## 13. Triển khai
-https://hsthanh1612.github.io/Financial_plan/ — Đã xác minh HTTP 200, asset tải đúng, bundle trỏ project production, không chứa emulator/localhost. Chưa kiểm tra luồng người dùng thật trên URL này (do mục 7).
+https://hsthanh1612.github.io/Finance-plan/ — HTTP 200 đã xác minh trước khi đổi tên repo; **cần kiểm tra lại** sau lần deploy dưới tên mới, asset tải đúng, bundle trỏ project production, không chứa emulator/localhost. Chưa kiểm tra luồng người dùng thật trên URL này (do mục 7).
 
 ## 14. Billing/Spark
 Không liên kết Billing, không nâng Blaze, không Hosting/Functions — **Đã xác minh** trong thao tác của mình (chỉ dùng `projects:create`, `apps:create`, `deploy --only firestore`). Trạng thái Billing của project **Chưa xác minh bằng công cụ** (CLI không có lệnh đọc billing); gói Spark là thông tin do người dùng cung cấp.
