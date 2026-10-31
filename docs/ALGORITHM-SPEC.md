@@ -22,8 +22,37 @@ Nguồn: công thức thô trong `Mockup.xlsx` (xem `docs/DATA-FLOW.md`). Code: 
 - Số tiền âm trong nhật ký → từ chối. Tỷ lệ tiết kiệm ≤ 0 → `RangeError`.
 - Sản phẩm không có trong danh mục → bỏ qua khi tính lợi suất.
 
-## Chưa triển khai (có trong mockup, chưa đủ thông tin/thời gian kiểm chứng)
-- Phần 3 sheet "Mục tiêu tài chính": mô phỏng tích lũy lãi kép theo từng sản phẩm (hàng 153–182), gom theo nhóm tài sản (hàng 186–250) và "mức sinh lời cần thiết" (V251) → Dashboard R6.
-- Sheet "Cân đối lộ trình nghề nghiệp": phân bổ cổ phiếu/trái phiếu/bảo hiểm/tiền gửi theo mốc tuổi và bảng thu nhập thực tế vs lộ trình (đang chỉ có "thu nhập cần có" theo năm/tuổi).
-- "Bảng khảo sát" khả năng chịu rủi ro (chấm điểm) và kết luận.
-- Bảng "Chi phí phát triển bản thân" theo tháng (Dashboard hàng 98–109).
+## Mô phỏng tích lũy và phân bổ tài sản (Phần 3, Cân đối lộ trình)
+| # | Quy tắc | Nguồn Excel | Code |
+|---|---|---|---|
+| 13 | Số dư sản phẩm mỗi mục tiêu: đang hoạt động = nạp (tiền/năm × tỷ trọng) + số dư năm trước × (1 + lợi suất sản phẩm); hết hạn = 0 | F154, X160, AD154… | `simulate` |
+| 14 | Mục tiêu có cờ `holdAfterEnd` (mặc định bật cho Hưu trí): sau khi kết thúc giữ số dư và sinh lãi, không nạp thêm | AP154 | `simulate` |
+| 15 | Nhóm tài sản: Cổ phiếu = ETF + DCBC + DCDS; Trái phiếu = DCBF + TP Techcombank + TP FE Credit; Bảo hiểm = BH thuần túy + BH liên kết; Tiền gửi = Finhay + Tiền gửi NH | hàng 221, Y–AB | `GROUPS`, `classShare` |
+| 16 | Mức sinh lời cần thiết = Σ (lợi suất nhóm × tỷ trọng nhóm); lợi suất nhóm = trung bình lợi suất các sản phẩm trong nhóm (Cổ phiếu riêng lẻ = (0,12+0+0+0)/4) | hàng 220, V221 | `requiredReturn` |
+| 17 | Trung bình 30 năm đầu (năm không có số dư tính 0) | V251 → Dashboard R6 | `averageRequiredReturn` |
+| 18 | Mốc tuổi: tuổi hiện tại, +5 … (6 mốc) | Cân đối E24:E29 | `milestones` |
+
+Đối chiếu Excel (unit test): tiền gửi của Du lịch 2023/2024/2025 = 5,2533 / 10,7692 / 16,5609 (F153–F155); tiền gửi của Khởi nghiệp 2028 = 41,3638 và 2030 = 130,3995 (X153, X160).
+
+### Điểm KHÁC Excel (quyết định thiết kế có chủ đích, vì công thức Excel không tổng quát hóa được)
+1. **Năm đầu tiên**: Excel cộng khoản nạp của các mục tiêu 7–10 (Khởi nghiệp, Mua chung cư, Quỹ học, Hưu trí) vào năm 2023 dù chưa bắt đầu (công thức hàng 153 không kiểm tra năm). Đã xác minh bằng số: giả thuyết này tái hiện đúng phân bổ năm 2023 của Excel (cổ phiếu 0,2357; trái phiếu 0,3454; bảo hiểm 0,0851; tiền gửi 0,3338). App **không sao chép lỗi này**.
+2. **Mục tiêu 9 (Quỹ học)**: Excel nạp mọi năm bất kể thời gian mục tiêu, rồi từ hàng 171 rút/nạp xen kẽ theo từng hàng làm số dư âm (AJ179 = −80,5). Hành vi này không xác định được từ mockup, nên app áp dụng quy tắc đều đặn (13) cho mục tiêu này.
+3. Do (1) và (2), phân bổ và mức sinh lời cần thiết của app **không trùng** số trong Excel (ví dụ mức sinh lời trung bình khác 9,97% của Dashboard R6). Giao diện ghi rõ đây là ước tính.
+4. **Bảng lộ trình nghề nghiệp**: cột "Số tiền cần có" của Excel lệch tuổi (G40 ứng với tuổi 25 lại lấy dữ liệu năm 2023 tuổi 21). App xếp đúng theo tuổi.
+
+## Khảo sát
+| # | Quy tắc | Nguồn | Code |
+|---|---|---|---|
+| 19 | Điểm = tổng điểm đáp án đã chọn (cột E); Khảo sát 1 (10 câu), Khảo sát 2 (11 câu) | F5:F58, F64:F125 | `scoreSurvey` |
+| 20 | Rủi ro: 6–17 ngại rủi ro; 18–27 trung lập; còn lại chấp nhận rủi ro | A59 | `riskResult` |
+| 21 | Hoàn cảnh: 11–20 không thuận lợi; 21–29 ít thuận lợi; 30–38 bình thường; 39–41 thuận lợi; còn lại cực kỳ thuận lợi | A126 | `circumstanceResult` |
+
+Giữ đúng quirk của mockup: Khảo sát 1 câu 1, đáp án "4" và ">4" không có điểm (cột E trống) nên tính 0 — đây chính là điều kiện cho tổng mẫu 23 điểm. Mẫu mockup: 23 điểm → trung lập; 36 điểm → bình thường (test khớp A59, A126). App chỉ đưa kết luận khi đã trả lời đủ (Excel trả "chấp nhận rủi ro" cho khảo sát trống do ngưỡng "còn lại").
+
+## Chi phí phát triển bản thân
+Nhật ký riêng theo tháng (ngày, danh mục, mô tả, số tiền, kết quả dự kiến/thực tế); thống kê theo danh mục = SUMIF (T*!AE92:AE101) và bảng 12 tháng (Dashboard 98–109). Danh mục: Mua sách, Khóa học ngắn hạn, Khóa học dài hạn, Tham gia các buổi diễn thuyết, Chi phát triển bản thân khác (dòng #REF! của mockup bị loại).
+
+## Chưa triển khai
+- Tổng tiết kiệm cần đạt (Dashboard L6 = SUM(S9:T18), chỉ cộng 8 trong 10 mục tiêu của mockup — nghi lỗi phạm vi, mockup không giải thích).
+- Văn bản tự đánh giá trong sheet "Mục tiêu bản thân" (đích đến, gia đình, môi trường làm việc).
+- Các biểu đồ khác của Excel (app chỉ có biểu đồ thu/chi).

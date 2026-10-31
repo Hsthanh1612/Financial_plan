@@ -65,3 +65,11 @@ form.row, .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-en
 svg.chart { width: 100%; height: auto; background: var(--ux-surface); border: 1px solid var(--ux-border); border-radius: var(--ux-radius); }
 @media (prefers-reduced-motion: no-preference) { button { transition: filter 0.15s; } }
 @media (max-width: 600px) { main { padding: 12px; } td input { width: 5rem; } }
+
+fieldset.q { border: 1px solid var(--ux-border); border-radius: var(--ux-radius); margin: 0 0 12px; padding: 10px 14px; background: var(--ux-surface); }
+fieldset.q legend { font-weight: 600; padding: 0 6px; max-width: 100%; }
+label.check { flex-direction: row; align-items: flex-start; gap: 8px; color: var(--ux-text); padding: 4px 0; cursor: pointer; }
+label.check input { margin-top: 4px; }
+details { margin-top: 6px; }
+td input[type="text"] { min-width: 8rem; }
+th input { width: 100%; min-width: 9rem; text-align: left; margin-bottom: 4px; }

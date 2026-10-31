@@ -1,4 +1,4 @@
-// Smoke test trên bản production thật (GitHub Pages + Firebase). KHÔNG chạy trong CI.
+﻿// Smoke test trên bản production thật (GitHub Pages + Firebase). KHÔNG chạy trong CI.
 // Tạo 1 tài khoản thử, đi qua luồng chính, rồi in uid để script dọn dẹp xóa dữ liệu thử.
 // Chạy: node tests/e2e/production-smoke.mjs <url>
 import { chromium } from 'playwright-core';
@@ -26,11 +26,11 @@ try {
   await page.getByRole('heading', { name: /Theo dõi tài chính năm 2023/ }).waitFor({ timeout: 45000 });
   ok('đăng ký thành công, plan khởi tạo, hiện Tổng quan');
 
-  await page.getByRole('button', { name: 'Mục tiêu' }).click();
-  await page.getByRole('row').filter({ hasText: 'Vay mua chung cư' }).getByText('0,92', { exact: true }).waitFor();
+  await page.getByRole('button', { name: 'Mục tiêu', exact: true }).click();
+  await page.getByRole('row').filter({ has: page.getByLabel('Giá trị Vay mua chung cư', { exact: true }) }).getByText('0,92', { exact: true }).waitFor();
   ok('mục tiêu tính đúng (0,92 triệu/tháng trả nợ)');
 
-  await page.getByRole('button', { name: 'Cài đặt' }).click();
+  await page.getByRole('button', { name: 'Cài đặt', exact: true }).click();
   const rate = page.getByLabel('Tỷ lệ tiết kiệm mục tiêu', { exact: true });
   await rate.fill('50');
   await rate.press('Tab');
@@ -56,3 +56,4 @@ try {
   console.log(`SMOKE_PASSWORD=${password}`);
   await browser.close();
 }
+

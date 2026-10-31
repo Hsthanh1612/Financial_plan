@@ -1,6 +1,7 @@
 import { h, fmt, signClass } from '../dom.js';
-import { summarizeYear } from '../../domain/budget.js';
-import { MONTH_LABELS } from '../../domain/catalog.js';
+import { summarizeYear, summarizeDevelopmentYear } from '../../domain/budget.js';
+import { MONTH_LABELS, DEVELOPMENT_CATEGORIES } from '../../domain/catalog.js';
+import { simulate, averageRequiredReturn } from '../../domain/simulation.js';
 
 function chart(rows) {
   const W = 720, H = 220, pad = 28;
@@ -43,6 +44,9 @@ export function overviewPage(ctx) {
 function render(ctx) {
   const { state } = ctx;
   const y = summarizeYear(state.months);
+  const dev = summarizeDevelopmentYear(state.months, DEVELOPMENT_CATEGORIES);
+  let avgReturn = null;
+  try { avgReturn = averageRequiredReturn(simulate(state.plan)); } catch { avgReturn = null; }
   const empty = state.months.every((m) => m.rev === -1);
   const card = (label, value, cls = '') => h('div', { class: 'card' }, h('div', { class: 'label' }, label), h('div', { class: `value ${cls}` }, fmt(value)));
   const headers = ['', ...MONTH_LABELS, 'Tổng'];
@@ -55,6 +59,7 @@ function render(ctx) {
       card(`Tổng thu nhập ${state.year}`, y.totalIncome),
       card(`Tổng chi tiêu ${state.year}`, y.totalExpense),
       card(`Tiết kiệm ${state.year}`, y.totalSaving, signClass(y.totalSaving)),
+      avgReturn === null ? null : h('div', { class: 'card' }, h('div', { class: 'label' }, 'Mức sinh lời cần thiết TB (30 năm)'), h('div', { class: 'value' }, `${fmt(avgReturn * 100)}%`)),
     ),
     empty ? h('p', { class: 'empty' }, 'Chưa có dữ liệu thu chi cho năm này. Vào mục "Thu chi" để nhập.') : null,
     chart(y.rows),
@@ -70,5 +75,10 @@ function render(ctx) {
           ...y.cumulativeVariance.map((v) => h('td', { class: signClass(v) }, fmt(v))), h('td', {}, '')),
       ),
     )),
+    h('div', { class: 'table-wrap' }, h('table', {},
+      h('caption', {}, 'Chi phí đầu tư phát triển bản thân (triệu đồng)'),
+      h('thead', {}, h('tr', {}, headers.map((t) => h('th', { scope: 'col' }, t)))),
+      h('tbody', {}, dev.rows.map((r) => h('tr', {}, h('th', { scope: 'row' }, r.category), ...r.values.map((v) => h('td', {}, fmt(v))), h('td', {}, fmt(r.total))))),
+      h('tfoot', {}, h('tr', {}, h('th', { scope: 'row' }, 'Tổng'), ...dev.monthTotals.map((v) => h('td', {}, fmt(v))), h('td', {}, fmt(dev.total)))))),
   );
 }

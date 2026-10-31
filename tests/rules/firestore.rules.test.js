@@ -77,6 +77,25 @@ test('rev: tạo phải rev=0; cập nhật phải tăng đúng 1 (chống ghi �
   await assertSucceeds(setDoc(ref, plan({ rev: 1 })));
 });
 
+test('plan: survey/career tùy chọn hợp lệ được ghi; sai kiểu hoặc quá lớn bị từ chối', async () => {
+  const ref = doc(alice(), 'users/alice/plan/main');
+  await assertSucceeds(setDoc(ref, plan({ survey: { risk: { 0: 1 }, circumstance: {} }, career: [{ age: 22, actual: 10, path: 12 }] })));
+  await assertFails(setDoc(ref, plan({ rev: 1, survey: 'x' })));
+  await assertFails(setDoc(ref, plan({ rev: 1, survey: { a: {}, b: {}, c: {} } })));
+  await assertFails(setDoc(ref, plan({ rev: 1, career: new Array(46).fill({}) })));
+  await assertFails(setDoc(ref, plan({ rev: 1, career: 'x' })));
+  await assertSucceeds(setDoc(ref, plan({ rev: 1, career: new Array(45).fill({ age: 1 }) })));
+});
+
+test('months: development tùy chọn ≤ 100 dòng; sai kiểu hoặc vượt giới hạn bị từ chối', async () => {
+  const ref = doc(alice(), 'users/alice/months/2023-01');
+  await assertSucceeds(setDoc(ref, month({ development: [{ category: 'Mua sách', amount: 0.1 }] })));
+  await assertFails(setDoc(ref, month({ rev: 1, development: 'x' })));
+  await assertFails(setDoc(ref, month({ rev: 1, development: new Array(101).fill({}) })));
+  await assertFails(setDoc(ref, month({ rev: 1, unknownField: 1 })));
+  await assertSucceeds(setDoc(ref, month({ rev: 1, development: new Array(100).fill({ amount: 1 }) })));
+});
+
 test('plan không cho xóa; doc id khác main bị từ chối', async () => {
   const ref = doc(alice(), 'users/alice/plan/main');
   await assertSucceeds(setDoc(ref, plan()));

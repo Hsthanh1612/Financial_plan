@@ -60,3 +60,20 @@ export function summarizeYear(months) {
     totalSaving: sum(rows.map((r) => r.saving)),
   };
 }
+
+/** Thống kê chi phát triển bản thân theo danh mục (T*!AE92:AE101); dòng thiếu danh mục hợp lệ bị từ chối. */
+export function summarizeDevelopment(entries, categories) {
+  entries.forEach(assertEntry);
+  const byCategory = actualByCategory(entries, categories);
+  return { byCategory, total: sum(entries.map((e) => e.amount)) };
+}
+
+/** Bảng 12 tháng × danh mục (Dashboard hàng 98–109). `months` là mảng 12 tháng (có thể thiếu `development`). */
+export function summarizeDevelopmentYear(months, categories) {
+  const perMonth = Array.from({ length: 12 }, (_, i) => summarizeDevelopment(months[i]?.development ?? [], categories));
+  const rows = categories.map((c) => {
+    const values = perMonth.map((m) => m.byCategory[c]);
+    return { category: c, values, total: sum(values) };
+  });
+  return { rows, monthTotals: perMonth.map((m) => m.total), total: sum(perMonth.map((m) => m.total)) };
+}

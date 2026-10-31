@@ -8,11 +8,15 @@ import { overviewPage } from './ui/pages/overview.js';
 import { goalsPage } from './ui/pages/goals.js';
 import { budgetPage } from './ui/pages/budget.js';
 import { settingsPage } from './ui/pages/settings.js';
+import { careerPage } from './ui/pages/career.js';
+import { surveyPage } from './ui/pages/survey.js';
 
 const root = document.getElementById('app');
 const PAGES = [
   { id: 'overview', label: 'Tổng quan', build: overviewPage },
   { id: 'goals', label: 'Mục tiêu', build: goalsPage },
+  { id: 'career', label: 'Lộ trình', build: careerPage },
+  { id: 'survey', label: 'Khảo sát', build: surveyPage },
   { id: 'budget', label: 'Thu chi', build: budgetPage },
   { id: 'settings', label: 'Cài đặt', build: settingsPage },
 ];

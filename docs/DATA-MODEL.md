@@ -21,10 +21,12 @@ Không dùng trường quyền/role do client sửa; không có trang admin tron
 | `age` | int 0–120 | có | Từ khóa!L7 | Tuổi tại `startYear` |
 | `savingRate` | number (0, 1] | có | Mục tiêu bản thân!I24 | Tỷ lệ tiết kiệm mục tiêu (0.4) |
 | `goals` | list<map> ≤ 20 | có | Mục tiêu bản thân I9:S20 | xem dưới |
+| `survey` | map ≤ 2 khóa | không | Bảng khảo sát | `{risk: {qi: oi}, circumstance: {qi: oi}}` — chỉ số đáp án đã chọn |
+| `career` | list ≤ 45 | không | Cân đối lộ trình Phần 2 | `{age, actual, path, skill}` theo tuổi |
 | `rev` | int ≥ 0 | có | – | Tăng 1 mỗi lần ghi; dùng phát hiện xung đột |
 | `updatedAt` | timestamp | có | – | `request.time` |
 
-`goals[]`: `kind` ("debt"|"invest"), `name` (string ≤ 120), `age` (int), `amount` (number ≥ 0), `startYear`, `endYear` (int), `annualRate` (number 0–1), `alreadyPaid`/`currentSaved` (number ≥ 0), `products` (list ≤ 3 của `{name, weight}`).
+`goals[]`: `id`, `kind` ("debt"|"invest"|"fund"), `holdAfterEnd` (bool, tùy chọn), `name` (string ≤ 120), `age` (int), `amount` (number ≥ 0), `startYear`, `endYear` (int), `annualRate` (number 0–1), `alreadyPaid`/`currentSaved` (number ≥ 0), `products` (list ≤ 3 của `{name, weight}`).
 Giữ ≤ 20 mục để tài liệu nhỏ hơn nhiều so với giới hạn 1 MiB.
 
 ## `users/{uid}/months/{yyyy-mm}`
@@ -33,8 +35,9 @@ Giữ ≤ 20 mục để tài liệu nhỏ hơn nhiều so với giới hạn 1 
 |---|---|---|
 | `year`, `month` | int | khớp id tài liệu |
 | `planIncome`, `planExpense` | map<string, number ≥ 0> | Kế hoạch theo khoản mục |
+| `development` | list<map> ≤ 100 (tùy chọn) | `{date, category, note, amount, expected, actual}` — chi đầu tư phát triển bản thân |
 | `income`, `expense` | list<map> ≤ 200 | `{date: string yyyy-mm-dd, category: string ≤ 80, note: string ≤ 200, amount: number ≥ 0}` |
-| `reasons` | map<string,string> | Lý do/biện pháp (tùy chọn) |
+| `reasons` | map ≤ 60 (tùy chọn) | Khóa dạng "loại, dấu gạch đứng, khoản mục" (loại là income hoặc expense), giá trị `{reason, measure}` |
 | `rev`, `updatedAt` | như trên | |
 
 Thực tế (cột W của sheet T*) và chênh lệch **không lưu**: tính từ nhật ký bằng `src/domain`.

@@ -16,18 +16,20 @@ service cloud.firestore {
     }
 
     function validPlan(d) {
-      return d.keys().hasOnly(['startYear', 'age', 'savingRate', 'goals', 'rev', 'updatedAt'])
+      return d.keys().hasOnly(['startYear', 'age', 'savingRate', 'goals', 'survey', 'career', 'rev', 'updatedAt'])
         && d.keys().hasAll(['startYear', 'age', 'savingRate', 'goals', 'rev', 'updatedAt'])
         && d.startYear is int && d.startYear >= 2000 && d.startYear <= 2100
         && d.age is int && d.age >= 0 && d.age <= 120
         && isNum(d.savingRate) && d.savingRate > 0 && d.savingRate <= 1
         && d.goals is list && d.goals.size() <= 20
+        && (!('survey' in d) || (d.survey is map && d.survey.size() <= 2))
+        && (!('career' in d) || (d.career is list && d.career.size() <= 45))
         && d.rev is int && d.rev >= 0
         && d.updatedAt == request.time;
     }
 
     function validMonth(d, id) {
-      return d.keys().hasOnly(['year', 'month', 'planIncome', 'planExpense', 'income', 'expense', 'reasons', 'rev', 'updatedAt'])
+      return d.keys().hasOnly(['year', 'month', 'planIncome', 'planExpense', 'income', 'expense', 'development', 'reasons', 'rev', 'updatedAt'])
         && d.keys().hasAll(['year', 'month', 'planIncome', 'planExpense', 'income', 'expense', 'rev', 'updatedAt'])
         && d.year is int && d.year >= 2000 && d.year <= 2100
         && d.month is int && d.month >= 1 && d.month <= 12
@@ -37,6 +39,7 @@ service cloud.firestore {
         && (!('reasons' in d) || (d.reasons is map && d.reasons.size() <= 60))
         && d.income is list && d.income.size() <= 200
         && d.expense is list && d.expense.size() <= 200
+        && (!('development' in d) || (d.development is list && d.development.size() <= 100))
         && d.rev is int && d.rev >= 0
         && d.updatedAt == request.time;
     }

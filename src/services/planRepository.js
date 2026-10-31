@@ -2,6 +2,7 @@
 import { doc, getDoc, getDocs, collection, query, where, orderBy, limit, runTransaction, serverTimestamp, documentId } from 'firebase/firestore';
 import { AppError, toAppError } from './errors.js';
 import { createDefaultPlan } from '../domain/defaultPlan.js';
+import { normalizePlan } from '../domain/plan.js';
 
 export const monthId = (year, month) => `${year}-${String(month).padStart(2, '0')}`;
 
@@ -12,7 +13,12 @@ function plain(data) {
 }
 
 function emptyMonth(year, month) {
-  return { year, month, planIncome: {}, planExpense: {}, income: [], expense: [], reasons: {}, rev: -1 };
+  return { year, month, planIncome: {}, planExpense: {}, income: [], expense: [], development: [], reasons: {}, rev: -1 };
+}
+
+/** Tài liệu tháng cũ chưa có `development`/`reasons` được bổ sung giá trị mặc định khi đọc. */
+function normalizeMonth(data) {
+  return { ...data, development: data.development ?? [], reasons: data.reasons ?? {} };
 }
 
 /**
@@ -46,7 +52,7 @@ export function createPlanRepository(db, uid) {
     async loadPlan() {
       try {
         const snap = await getDoc(planRef);
-        return snap.exists() ? plain(snap.data()) : null;
+        return snap.exists() ? normalizePlan(plain(snap.data())) : null;
       } catch (e) {
         throw toAppError(e);
       }
@@ -58,7 +64,7 @@ export function createPlanRepository(db, uid) {
       if (existing) return { plan: existing, created: false };
       const base = createDefaultPlan();
       const rev = await writeVersioned(db, planRef, -1, base);
-      return { plan: { ...base, rev }, created: true };
+      return { plan: normalizePlan({ ...base, rev }), created: true };
     },
 
     savePlan(plan) {
@@ -80,7 +86,7 @@ export function createPlanRepository(db, uid) {
         const snap = await getDocs(q);
         const byMonth = new Map();
         snap.forEach((d) => {
-          const data = plain(d.data());
+          const data = normalizeMonth(plain(d.data()));
           byMonth.set(data.month, data);
         });
         return Array.from({ length: 12 }, (_, i) => byMonth.get(i + 1) ?? emptyMonth(year, i + 1));
